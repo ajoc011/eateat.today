@@ -59,11 +59,14 @@
         `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=${API_KEY}`
       );
       const data = await response.json();
-      return data.items.map(item => ({
-        title: item.snippet.title,
-        url: `https://youtu.be/${item.snippet.resourceId.videoId}`,
-        thumbnail: item.snippet.thumbnails.high.url
-      }));
+
+      return data.items
+        .filter(item => item.snippet && item.snippet.resourceId && item.snippet.thumbnails?.high)
+        .map(item => ({
+          title: item.snippet.title,
+          url: `https://youtu.be/${item.snippet.resourceId.videoId}`,
+          thumbnail: item.snippet.thumbnails.high.url
+        }));
     }
 
     async function recommendVideo() {
