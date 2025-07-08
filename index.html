@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  
+
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BJ1MZFLHVJ"></script>
 <script>
@@ -14,93 +13,45 @@
 </script>
 
   
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>오늘 뭐먹지?</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-      padding: 50px;
+      font-family: 'Pretendard', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
       background: #fff;
+      margin: 0;
     }
     h1 {
-      font-size: 2em;
-      color: #111;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
     }
-    #recommendBtn {
-      font-size: 1.2em;
-      padding: 15px 25px;
-      background-color: #f66060;
-      color: white;
+    button {
+      font-size: 1.2rem;
+      padding: 1rem 2rem;
       border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 2.5s linear;
-    }
-    #recommendBtn:disabled {
-      background-color: #ccc;
+      border-radius: 8px;
+      background-color: #f06262;
+      color: white;
       cursor: not-allowed;
+      opacity: 0.5;
     }
     #result {
-      margin-top: 30px;
-      font-size: 1.1em;
-    }
-    .thumbnail {
-      width: 100%;
-      max-width: 300px;
-      margin-top: 20px;
-      border-radius: 8px;
-    }
-    .title {
-      font-weight: bold;
-      margin-top: 15px;
-      font-size: 1.2em;
+      margin-top: 2rem;
+      font-size: 1.1rem;
     }
   </style>
- 
 </head>
 <body>
+
   <h1>오늘 뭐먹지?</h1>
-  <button id="recommendBtn" onclick="recommendVideo()">오늘 뭐먹지 🍽️</button>
-  <div id="result"> </div>
+  <button disabled>오늘 뭐먹지 🍽️ (준비 중)</button>
+  <div id="result">영상 추천 기능은 현재 준비 중입니다 😊</div>
 
-  <script>
-    const BUTTON_DELAY = 2500;
-    const API_URL = "https://script.google.com/macros/s/AKfycbzcW7X3SSsJ3HTT5jkXCVCr2SjmB42Qmz3y8sxYWnetcu2qHD8jS2byHRZ4yJbpy/exec";
-    const btn = document.getElementById("recommendBtn");
-
-    async function fetchVideos() {
-      const response = await fetch(API_URL);
-      const data = await response.json();
-      return data;
-    }
-
-    async function recommendVideo() {
-      btn.disabled = true;
-      btn.style.background = "#ccc";
-      document.getElementById("result").innerHTML = "영상 추천 중...";
-
-      try {
-        const videos = await fetchVideos();
-        const random = Math.floor(Math.random() * videos.length);
-        const video = videos[random];
-        const html = `
-          <img class="thumbnail" src="${video.thumbnail}" alt="thumbnail" />
-          <div class="title">${video.title}</div>
-          <a href="${video.url}" target="_blank">영상 보러 가기 ▶️</a>
-        `;
-        document.getElementById("result").innerHTML = html;
-      } catch (error) {
-        document.getElementById("result").innerHTML = "영상 불러오기 실패 😢";
-        console.error(error);
-      }
-
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.style.background = "#f66060";
-      }, BUTTON_DELAY);
-    }
-  </script>
 </body>
 </html>
