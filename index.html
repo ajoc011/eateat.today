@@ -1,57 +1,116 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>오늘 뭐먹지?</title>
 
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BJ1MZFLHVJ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BJ1MZFLHVJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BJ1MZFLHVJ');
+  </script>
 
-  gtag('config', 'G-BJ1MZFLHVJ');
-</script>
-
-  
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>오늘 뭐먹지?</title>
   <style>
     body {
-      font-family: 'Pretendard', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background: #fff;
-      margin: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      text-align: center;
+      padding: 2rem;
+      background-color: #fdfdfd;
     }
     h1 {
-      font-size: 2.5rem;
-      margin-bottom: 2rem;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
     }
     button {
       font-size: 1.2rem;
       padding: 1rem 2rem;
       border: none;
-      border-radius: 8px;
-      background-color: #f06262;
+      border-radius: 10px;
+      background-color: #ff5c5c;
       color: white;
-      cursor: not-allowed;
-      opacity: 0.5;
+      cursor: pointer;
+      transition: background-color 2.5s ease, opacity 2.5s ease;
     }
-    #result {
+    button:disabled {
+      background-color: #ccc;
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .result {
       margin-top: 2rem;
+    }
+    .thumbnail {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 8px;
+    }
+    .title {
       font-size: 1.1rem;
+      margin: 1rem 0;
+    }
+    a {
+      color: #3366cc;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-
   <h1>오늘 뭐먹지?</h1>
-  <button disabled>오늘 뭐먹지 🍽️ (준비 중)</button>
-  <div id="result">영상 추천 기능은 현재 준비 중입니다 😊</div>
+  <button id="recommendBtn" onclick="recommendVideo()">오늘 뭐먹지 🍽️</button>
+  <div class="result" id="result">영상 목록을 불러오는 중...</div>
 
+  <script>
+    const API_KEY = 'AIzaSyA0zLOvey8Xvy2PCdLzgHPSrq7Xo6mlTzc';
+    const PLAYLIST_ID = 'PLZtOrrcK854BQglBYQY9IBAbEGwIMzsm5';
+    const BUTTON_DELAY = 2500;
+
+    async function fetchVideos() {
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=${API_KEY}`
+      );
+      const data = await response.json();
+      return data.items.map(item => ({
+        title: item.snippet.title,
+        url: `https://youtu.be/${item.snippet.resourceId.videoId}`,
+        thumbnail: item.snippet.thumbnails.high.url
+      }));
+    }
+
+    async function recommendVideo() {
+      const btn = document.getElementById('recommendBtn');
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '영상 추천 중...';
+
+      btn.disabled = true;
+      btn.style.backgroundColor = '#ccc';
+      btn.style.opacity = '0.6';
+
+      try {
+        const videos = await fetchVideos();
+        const random = Math.floor(Math.random() * videos.length);
+        const video = videos[random];
+
+        const html = `
+          <img class="thumbnail" src="${video.thumbnail}" alt="thumbnail" />
+          <div class="title">${video.title}</div>
+          <a href="${video.url}" target="_blank">영상 보러 가기 ▶️</a>
+        `;
+        resultDiv.innerHTML = html;
+      } catch (error) {
+        resultDiv.innerHTML = '영상 불러오기 실패 😢';
+        console.error(error);
+      }
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.style.backgroundColor = '#ff5c5c';
+        btn.style.opacity = '1';
+      }, BUTTON_DELAY);
+    }
+  </script>
 </body>
 </html>
