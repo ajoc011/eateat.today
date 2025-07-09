@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>아Jo씨의 오늘 뭐 먹지</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <style>
@@ -31,10 +31,9 @@
       border: none;
       border-radius: 10px;
       color: white;
-      cursor: pointer;
-      background: #ff5c5c;
+      background-color: #ccc;
+      cursor: not-allowed;
       overflow: hidden;
-      z-index: 1;
     }
     .fill-button .fill {
       position: absolute;
@@ -42,7 +41,7 @@
       left: 0;
       height: 100%;
       width: 0%;
-      background-color: #ccc;
+      background-color: #ff5c5c;
       z-index: 1;
       transition: width 2.5s linear;
     }
@@ -50,9 +49,6 @@
       position: relative;
       z-index: 2;
       pointer-events: none;
-    }
-    .fill-button:disabled {
-      cursor: not-allowed;
     }
     .result {
       margin-top: 2rem;
@@ -98,14 +94,18 @@
 
     function animateButton(btn, fillBar) {
       btn.disabled = true;
-      fillBar.style.transition = 'none';
-      fillBar.style.width = '0%';
+      btn.style.cursor = "not-allowed";
+      btn.style.backgroundColor = "#ccc";
+      fillBar.style.transition = "none";
+      fillBar.style.width = "0%";
       void fillBar.offsetWidth;
-      fillBar.style.transition = 'width 2.5s linear';
-      fillBar.style.width = '100%';
+      fillBar.style.transition = "width 2.5s linear";
+      fillBar.style.width = "100%";
       setTimeout(() => {
-        fillBar.style.transition = 'none';
-        fillBar.style.width = '0%';
+        fillBar.style.transition = "none";
+        fillBar.style.width = "0%";
+        btn.style.backgroundColor = "#ff5c5c";
+        btn.style.cursor = "pointer";
         btn.disabled = false;
       }, BUTTON_DELAY);
     }
@@ -134,6 +134,13 @@
         console.error(error);
       }
     }
+
+    window.onload = () => {
+      const btn = document.getElementById('recommendBtn');
+      btn.style.backgroundColor = "#ff5c5c";
+      btn.style.cursor = "pointer";
+      btn.disabled = false;
+    };
   </script>
 </body>
 </html>
