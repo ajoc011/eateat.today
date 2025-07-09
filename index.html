@@ -90,11 +90,13 @@
     async function fetchVideos() {
       const response = await fetch(SHEET_URL);
       const data = await response.json();
-      return data.map(row => ({
-        title: row["제목"],
-        url: row["링크"],
-        thumbnail: row["썸네일"]
-      }));
+    return data
+    .filter(row => row["링크"] && row["제목"]) // 최소한 제목과 링크가 있어야 함
+    .map(row => ({
+      title: row["제목"] || '제목 없음',
+      url: row["링크"],
+      thumbnail: row["썸네일"] || 'https://via.placeholder.com/480x270?text=No+Thumbnail'
+        }));
     }
 
     async function recommendVideo() {
