@@ -1,35 +1,53 @@
+
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>아Jo씨의 오늘 뭐 먹지</title>
+  <title>아Jo씨의 오늘 뭐 먹지?</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;
-      text-align: center;
-      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
       background-color: #fdfdfd;
     }
+
     h1 {
       font-size: 2rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
 
-    button {
+    .btn-wrapper {
       position: relative;
       width: 200px;
       height: 60px;
+      margin-bottom: 2rem;
+    }
+
+    button {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       font-size: 1.2rem;
       border: none;
       border-radius: 10px;
       color: white;
-      background-color: #ccc; /* 초기 회색 */
+      background-color: #ff5c5c;
       cursor: pointer;
-      overflow: hidden;
+      z-index: 2;
     }
 
     button:disabled {
+      background-color: #ccc;
       cursor: not-allowed;
     }
 
@@ -40,16 +58,13 @@
       height: 100%;
       width: 0%;
       background-color: #ff5c5c;
-      transition: width 2.5s ease;
+      border-radius: 10px;
       z-index: 1;
-    }
-
-    .btn-text {
-      position: relative;
-      z-index: 2;
+      transition: width 2.5s ease;
     }
 
     .result {
+      text-align: center;
       margin-top: 2rem;
     }
 
@@ -71,11 +86,11 @@
   </style>
 </head>
 <body>
-  <h1>아Jo씨의 오늘 뭐 먹지</h1>
-  <button id="recommendBtn" onclick="recommendVideo()">
-    <span class="fill-bar" id="fillBar"></span>
-    <span class="btn-text">오늘 뭐 먹지 🍽️</span>
-  </button>
+  <h1>아Jo씨의 오늘 뭐 먹지?</h1>
+  <div class="btn-wrapper">
+    <div class="fill-bar" id="fillBar"></div>
+    <button id="recommendBtn" onclick="recommendVideo()">오늘 뭐 먹지 🍽️</button>
+  </div>
   <div class="result" id="result">영상 목록을 불러오는 중...</div>
 
   <script>
@@ -98,10 +113,9 @@
       const resultDiv = document.getElementById('result');
 
       btn.disabled = true;
-      fillBar.style.width = '0%'; // reset
-      void fillBar.offsetWidth;   // force reflow
+      fillBar.style.width = '0%';
+      void fillBar.offsetWidth; // 강제 리플로우
       fillBar.style.width = '100%';
-
       resultDiv.innerHTML = '영상 추천 중...';
 
       try {
