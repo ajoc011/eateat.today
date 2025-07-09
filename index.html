@@ -1,77 +1,49 @@
-
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>아Jo씨의 오늘 뭐 먹지?</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <title>아Jo씨의 오늘 뭐 먹지</title>
   <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
+      text-align: center;
+      padding: 2rem;
       background-color: #fdfdfd;
     }
 
     h1 {
       font-size: 2rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     .btn-wrapper {
       position: relative;
+      display: inline-block;
       width: 200px;
       height: 60px;
-      margin-bottom: 2rem;
     }
 
-button {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  font-size: 1.2rem;
-  border: none;
-  border-radius: 10px;
-  color: white;
-  background-color: transparent;  /* 색상 제거 */
-  cursor: pointer;
-  z-index: 2;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  /* 배경색 제거 */
-}
-
+    button {
+      width: 100%;
+      height: 100%;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      background-color: #ff5c5c;
+      background-image: linear-gradient(to right, #ff5c5c 0%, #ff5c5c 0%, #ccc 0%);
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      transition: background-image 0s, background-position 0s;
     }
 
     button:disabled {
-      background-color: #ccc;
       cursor: not-allowed;
     }
 
-    .fill-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 0%;
-      background-color: #ff5c5c;
-      border-radius: 10px;
-      z-index: 1;
-      transition: width 2.5s ease;
-    }
-
     .result {
-      text-align: center;
       margin-top: 2rem;
     }
 
@@ -93,9 +65,8 @@ button:disabled {
   </style>
 </head>
 <body>
-  <h1>아Jo씨의 오늘 뭐 먹지?</h1>
+  <h1>아Jo씨의 오늘 뭐 먹지</h1>
   <div class="btn-wrapper">
-    <div class="fill-bar" id="fillBar"></div>
     <button id="recommendBtn" onclick="recommendVideo()">오늘 뭐 먹지 🍽️</button>
   </div>
   <div class="result" id="result">영상 목록을 불러오는 중...</div>
@@ -114,16 +85,29 @@ button:disabled {
       }));
     }
 
+    function animateButton(btn) {
+      btn.disabled = true;
+      btn.style.backgroundImage = "linear-gradient(to right, #ccc 0%, #ccc 0%, #ff5c5c 0%)";
+      btn.style.transition = "none";
+      void btn.offsetWidth; // 강제 리플로우
+
+      // 트랜지션 적용
+      btn.style.transition = "background-image 2.5s linear";
+      btn.style.backgroundImage = "linear-gradient(to right, #ccc 0%, #ff5c5c 100%)";
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.style.backgroundImage = "none";
+        btn.style.backgroundColor = "#ff5c5c";
+      }, BUTTON_DELAY);
+    }
+
     async function recommendVideo() {
       const btn = document.getElementById('recommendBtn');
-      const fillBar = document.getElementById('fillBar');
       const resultDiv = document.getElementById('result');
-
-      btn.disabled = true;
-      fillBar.style.width = '0%';
-      void fillBar.offsetWidth; // 강제 리플로우
-      fillBar.style.width = '100%';
       resultDiv.innerHTML = '영상 추천 중...';
+
+      animateButton(btn);
 
       try {
         const videos = await fetchVideos();
@@ -140,12 +124,13 @@ button:disabled {
         resultDiv.innerHTML = '영상 불러오기 실패 😢';
         console.error(error);
       }
-
-      setTimeout(() => {
-        fillBar.style.width = '0%';
-        btn.disabled = false;
-      }, BUTTON_DELAY);
     }
+
+    // 버튼 초기화 상태 적용 (빨간색)
+    window.onload = () => {
+      const btn = document.getElementById('recommendBtn');
+      btn.style.backgroundColor = "#ff5c5c";
+    };
   </script>
 </body>
 </html>
