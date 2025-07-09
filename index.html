@@ -23,7 +23,7 @@
       height: 60px;
       margin-bottom: 2rem;
     }
-    .fill-button {
+    #recommendBtn {
       position: relative;
       width: 100%;
       height: 100%;
@@ -31,11 +31,12 @@
       border: none;
       border-radius: 10px;
       color: white;
-      background-color: #ccc;
-      cursor: not-allowed;
+      background-color: #ff5c5c; /* 기본 빨간색 */
+      cursor: pointer;
       overflow: hidden;
+      z-index: 1;
     }
-    .fill-button .fill {
+    #recommendBtn .fill-bar {
       position: absolute;
       top: 0;
       left: 0;
@@ -45,10 +46,9 @@
       z-index: 1;
       transition: width 2.5s linear;
     }
-    .fill-button span {
+    #recommendBtn .btn-text {
       position: relative;
       z-index: 2;
-      pointer-events: none;
     }
     .result {
       margin-top: 2rem;
@@ -71,9 +71,9 @@
 <body>
   <h1>아Jo씨의 오늘 뭐 먹지</h1>
   <div class="btn-wrapper">
-    <button class="fill-button" id="recommendBtn" onclick="recommendVideo()">
-      <div class="fill" id="fillBar"></div>
-      <span>오늘 뭐 먹지 🍽️</span>
+    <button id="recommendBtn" onclick="recommendVideo()">
+      <div class="fill-bar" id="fillBar"></div>
+      <span class="btn-text">오늘 뭐 먹지 🍽️</span>
     </button>
   </div>
   <div class="result" id="result">영상 목록을 불러오는 중...</div>
@@ -95,7 +95,7 @@
     function animateButton(btn, fillBar) {
       btn.disabled = true;
       btn.style.cursor = "not-allowed";
-      btn.style.backgroundColor = "#ccc";
+      btn.style.backgroundColor = "#ccc"; // 전체 회색으로 변경
       fillBar.style.transition = "none";
       fillBar.style.width = "0%";
       void fillBar.offsetWidth;
@@ -104,7 +104,7 @@
       setTimeout(() => {
         fillBar.style.transition = "none";
         fillBar.style.width = "0%";
-        btn.style.backgroundColor = "#ff5c5c";
+        btn.style.backgroundColor = "#ff5c5c"; // 빨간색 복구
         btn.style.cursor = "pointer";
         btn.disabled = false;
       }, BUTTON_DELAY);
