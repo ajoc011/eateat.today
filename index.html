@@ -24,23 +24,35 @@
       height: 60px;
     }
 
-    button {
+    #recommendBtn {
+      position: relative;
       width: 100%;
       height: 100%;
       font-size: 1.2rem;
       border: none;
       border-radius: 10px;
       color: white;
-      cursor: pointer;
       background-color: #ff5c5c;
-      background-image: linear-gradient(to right, #ff5c5c 0%, #ff5c5c 0%, #ccc 0%);
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      transition: background-image 0s, background-position 0s;
+      cursor: pointer;
+      z-index: 1;
+      overflow: hidden;
     }
 
-    button:disabled {
+    #recommendBtn:disabled {
+      background-color: #ccc;
       cursor: not-allowed;
+    }
+
+    .fill-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background-color: #ff5c5c;
+      border-radius: 10px;
+      z-index: 0;
+      pointer-events: none;
     }
 
     .result {
@@ -67,6 +79,7 @@
 <body>
   <h1>아Jo씨의 오늘 뭐 먹지</h1>
   <div class="btn-wrapper">
+    <div class="fill-bar" id="fillBar"></div>
     <button id="recommendBtn" onclick="recommendVideo()">오늘 뭐 먹지 🍽️</button>
   </div>
   <div class="result" id="result">영상 목록을 불러오는 중...</div>
@@ -85,29 +98,32 @@
       }));
     }
 
-    function animateButton(btn) {
+    function animateButton(btn, fillBar) {
       btn.disabled = true;
-      btn.style.backgroundImage = "linear-gradient(to right, #ccc 0%, #ccc 0%, #ff5c5c 0%)";
-      btn.style.transition = "none";
-      void btn.offsetWidth; // 강제 리플로우
+      btn.style.backgroundColor = '#ccc';
+      fillBar.style.transition = 'none';
+      fillBar.style.width = '0%';
 
-      // 트랜지션 적용
-      btn.style.transition = "background-image 2.5s linear";
-      btn.style.backgroundImage = "linear-gradient(to right, #ccc 0%, #ff5c5c 100%)";
+      void fillBar.offsetWidth; // 리플로우 강제
+
+      fillBar.style.transition = 'width 2.5s linear';
+      fillBar.style.width = '100%';
 
       setTimeout(() => {
+        fillBar.style.transition = 'none';
+        fillBar.style.width = '0%';
+        btn.style.backgroundColor = '#ff5c5c';
         btn.disabled = false;
-        btn.style.backgroundImage = "none";
-        btn.style.backgroundColor = "#ff5c5c";
       }, BUTTON_DELAY);
     }
 
     async function recommendVideo() {
       const btn = document.getElementById('recommendBtn');
+      const fillBar = document.getElementById('fillBar');
       const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = '영상 추천 중...';
 
-      animateButton(btn);
+      resultDiv.innerHTML = '영상 추천 중...';
+      animateButton(btn, fillBar);
 
       try {
         const videos = await fetchVideos();
@@ -125,12 +141,6 @@
         console.error(error);
       }
     }
-
-    // 버튼 초기화 상태 적용 (빨간색)
-    window.onload = () => {
-      const btn = document.getElementById('recommendBtn');
-      btn.style.backgroundColor = "#ff5c5c";
-    };
   </script>
 </body>
 </html>
