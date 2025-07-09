@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>오늘 뭐먹지?</title>
+  <title>아Jo씨의 오늘 뭐 먹지?</title>
   <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;
@@ -12,34 +12,63 @@
       background-color: #fdfdfd;
     }
     h1 {
-      font-size: 2.2rem;
+      font-size: 2rem;
       margin-bottom: 1.5rem;
     }
+
+    .btn-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 200px;
+      height: 60px;
+    }
+
     button {
+      position: absolute;
+      width: 100%;
+      height: 100%;
       font-size: 1.2rem;
-      padding: 1rem 2rem;
       border: none;
       border-radius: 10px;
-      background-color: #ff5c5c;
       color: white;
+      background-color: #ff5c5c;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      z-index: 1;
+      overflow: hidden;
     }
-    button:hover {
-      background-color: #e14c4c;
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
     }
+
+    .fill-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background-color: #ff5c5c;
+      border-radius: 10px;
+      z-index: 0;
+      transition: width 2.5s ease;
+    }
+
     .result {
       margin-top: 2rem;
     }
+
     .thumbnail {
       width: 100%;
       max-width: 480px;
       border-radius: 8px;
     }
+
     .title {
       font-size: 1.1rem;
       margin: 1rem 0;
     }
+
     a {
       color: #3366cc;
       text-decoration: none;
@@ -47,27 +76,38 @@
   </style>
 </head>
 <body>
-  <h1>오늘 뭐먹지?</h1>
-  <button onclick="recommendVideo()">오늘 뭐먹지 🍽️</button>
+  <h1>오늘 뭐 먹지?</h1>
+  <div class="btn-wrapper">
+    <div class="fill-bar" id="fillBar"></div>
+    <button id="recommendBtn" onclick="recommendVideo()">오늘 뭐 먹지 🍽️</button>
+  </div>
   <div class="result" id="result">영상 목록을 불러오는 중...</div>
 
   <script>
-    const SHEET_URL = 'https://opensheet.elk.sh/1QJFSIrCCsDLh8PYUoyT0kSdfIckgtLirZumKas-KUDA/list';
+    const SHEET_URL = "https://opensheet.elk.sh/1QJFSIrCCsDLh8PYUoyT0kSdfIckgtLirZumKas-KUDA/list";
+    const BUTTON_DELAY = 2500;
 
     async function fetchVideos() {
       const response = await fetch(SHEET_URL);
       const data = await response.json();
-      return data
-        .filter(video => video['링크'] && video['제목'] && video['썸네일']) // 불완전한 행 제거
-        .map(item => ({
-          title: item['제목'],
-          url: item['링크'],
-          thumbnail: item['썸네일']
-        }));
+      return data.map(row => ({
+        title: row["제목"],
+        url: row["링크"],
+        thumbnail: row["썸네일"]
+      }));
     }
 
     async function recommendVideo() {
+      const btn = document.getElementById('recommendBtn');
+      const fillBar = document.getElementById('fillBar');
       const resultDiv = document.getElementById('result');
+
+      btn.disabled = true;
+      fillBar.style.width = '0%'; // 초기화
+      void fillBar.offsetWidth;   // 강제 리플로우
+
+      fillBar.style.width = '100%';
+
       resultDiv.innerHTML = '영상 추천 중...';
 
       try {
@@ -85,6 +125,11 @@
         resultDiv.innerHTML = '영상 불러오기 실패 😢';
         console.error(error);
       }
+
+      setTimeout(() => {
+        fillBar.style.width = '0%';
+        btn.disabled = false;
+      }, BUTTON_DELAY);
     }
   </script>
 </body>
