@@ -6,16 +6,21 @@
   <title>아Jo씨의 오늘 뭐 먹지</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <style>
+    /* 전체 바디 스타일 */
     body {
       font-family: 'Noto Sans KR', sans-serif;
       text-align: center;
       padding: 2rem;
       background-color: #fdfdfd;
     }
+
+    /* 메인 제목 */
     h1 {
       font-size: 2rem;
       margin-bottom: 1.5rem;
     }
+
+    /* 버튼 래퍼 스타일 */
     .btn-wrapper {
       position: relative;
       display: inline-block;
@@ -23,6 +28,8 @@
       height: 60px;
       margin-bottom: 2rem;
     }
+
+    /* 추천 버튼 스타일 */
     #recommendBtn {
       position: relative;
       width: 100%;
@@ -31,11 +38,13 @@
       border: none;
       border-radius: 10px;
       color: white;
-      background-color: #ff5c5c;
+      background-color: #ff5c5c; /* 기본 빨간색 */
       cursor: pointer;
       overflow: hidden;
       z-index: 1;
     }
+
+    /* 버튼 내부의 애니메이션 바 (딜레이 시 동작) */
     #recommendBtn .fill-bar {
       position: absolute;
       top: 0;
@@ -44,42 +53,54 @@
       width: 0%;
       background-color: #ff5c5c;
       z-index: 1;
-      transition: width 1.5s linear;
+      transition: width 1.5s linear; /* 애니메이션 속도 조절 가능 */
     }
+
+    /* 버튼 텍스트 (가장 위로 표시됨) */
     #recommendBtn .btn-text {
       position: relative;
       z-index: 2;
     }
+
+    /* 결과 출력 영역 */
     .result {
       margin-top: 2rem;
-      min-height: 200px; /* 공간 확보 */
+      min-height: 200px; /* 썸네일이 들어갈 공간 확보 */
       display: flex;
       align-items: center;
       justify-content: center;
     }
+
+    /* 썸네일 이미지 스타일 */
     .thumbnail {
       width: 100%;
       max-width: 480px;
       border-radius: 8px;
     }
+
+    /* 영상 제목 텍스트 */
     .title {
       font-size: 1.1rem;
       margin: 1rem 0;
     }
+
+    /* 링크 스타일 */
     a {
       color: #3366cc;
       text-decoration: none;
     }
 
-    /* 🔧 스피너 스타일 추가 */
+    /* 스피너 애니메이션 스타일 */
     .spinner {
       border: 6px solid #eee;
-      border-top: 6px solid #ff5c5c;
+      border-top: 6px solid #ff5c5c; /* 회전하는 부분 강조 색 */
       border-radius: 50%;
       width: 40px;
       height: 40px;
-      animation: spin 1s linear infinite;
+      animation: spin 1s linear infinite; /* 회전 속도 조절 가능 */
     }
+
+    /* 스피너 회전 키프레임 */
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -88,18 +109,26 @@
 </head>
 <body>
   <h1>아Jo씨의 오늘 뭐 먹지</h1>
+
+  <!-- 추천 버튼 영역 -->
   <div class="btn-wrapper">
     <button id="recommendBtn" onclick="recommendVideo()">
       <div class="fill-bar" id="fillBar"></div>
       <span class="btn-text">오늘 뭐 먹지 🍽️</span>
     </button>
   </div>
+
+  <!-- 추천 결과 표시 영역 -->
   <div class="result" id="result">버튼을 눌러주세요</div>
 
   <script>
+    // 🔧 구글 스프레드시트에서 영상 데이터 가져올 주소
     const SHEET_URL = "https://opensheet.elk.sh/1QJFSIrCCsDLh8PYUoyT0kSdfIckgtLirZumKas-KUDA/list";
+
+    // 🔧 버튼 비활성화 및 로딩 지속 시간 (ms 단위, 1500 = 1.5초)
     const BUTTON_DELAY = 1500;
 
+    // 구글 시트에서 영상 목록 받아오는 함수 (비동기)
     async function fetchVideos() {
       const response = await fetch(SHEET_URL);
       const data = await response.json();
@@ -110,15 +139,20 @@
       }));
     }
 
+    // 버튼 클릭 시 애니메이션 및 비활성화 처리
     function animateButton(btn, fillBar) {
-      btn.disabled = true;
-      btn.style.cursor = "not-allowed";
-      btn.style.backgroundColor = "#ccc";
+      btn.disabled = true;                 // 버튼 비활성화
+      btn.style.cursor = "not-allowed";    // 커서 변경
+      btn.style.backgroundColor = "#ccc";  // 색상 회색으로 변경
+
+      // 애니메이션 바 초기화 및 재시작
       fillBar.style.transition = "none";
       fillBar.style.width = "0%";
-      void fillBar.offsetWidth;
+      void fillBar.offsetWidth;            // 리플로우 강제 발생
       fillBar.style.transition = "width 1.5s linear";
       fillBar.style.width = "100%";
+
+      // 일정 시간 뒤 원상복귀
       setTimeout(() => {
         fillBar.style.transition = "none";
         fillBar.style.width = "0%";
@@ -128,22 +162,24 @@
       }, BUTTON_DELAY);
     }
 
+    // 추천 버튼 클릭 시 실행되는 메인 함수
     async function recommendVideo() {
       const btn = document.getElementById('recommendBtn');
       const fillBar = document.getElementById('fillBar');
       const resultDiv = document.getElementById('result');
 
-      // 🔧 스피너 표시
+      // 🔧 결과 영역에 스피너 표시
       resultDiv.innerHTML = '<div class="spinner"></div>';
 
+      // 버튼 애니메이션 시작
       animateButton(btn, fillBar);
 
       try {
-        const videos = await fetchVideos();
+        const videos = await fetchVideos(); // 영상 데이터 불러오기
         const random = Math.floor(Math.random() * videos.length);
         const video = videos[random];
 
-        // 🔧 버튼 딜레이 시간 이후 썸네일 표시
+        // 🔧 지정된 지연 시간 후 썸네일 표시
         setTimeout(() => {
           const html = `
             <div>
@@ -154,12 +190,15 @@
           `;
           resultDiv.innerHTML = html;
         }, BUTTON_DELAY);
+
       } catch (error) {
+        // 🔧 에러 발생 시 메시지 출력
         resultDiv.innerHTML = '영상 불러오기 실패 😢';
         console.error(error);
       }
     }
 
+    // 페이지 로딩 시 버튼 초기화
     window.onload = () => {
       const btn = document.getElementById('recommendBtn');
       btn.style.backgroundColor = "#ff5c5c";
