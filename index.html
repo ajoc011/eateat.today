@@ -44,7 +44,7 @@
       width: 0%;
       background-color: #ff5c5c;
       z-index: 1;
-      transition: width 2.5s linear;
+      transition: width 2s linear;
     }
     #recommendBtn .btn-text {
       position: relative;
@@ -80,7 +80,7 @@
 
   <script>
     const SHEET_URL = "https://opensheet.elk.sh/1QJFSIrCCsDLh8PYUoyT0kSdfIckgtLirZumKas-KUDA/list";
-    const BUTTON_DELAY = 2500;
+    const BUTTON_DELAY = 2000;
 
     async function fetchVideos() {
       const response = await fetch(SHEET_URL);
@@ -99,7 +99,7 @@
       fillBar.style.transition = "none";
       fillBar.style.width = "0%";
       void fillBar.offsetWidth;
-      fillBar.style.transition = "width 2.5s linear";
+      fillBar.style.transition = "width 2s linear";
       fillBar.style.width = "100%";
       setTimeout(() => {
         fillBar.style.transition = "none";
